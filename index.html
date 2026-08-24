@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#d90429">
+  <title>xavenDON — دانلود هوشمند</title>
+  <meta name="description" content="انتخاب کیفیت و دریافت ویدیو، صدا، کاور و کپشن در یک رابط ساده.">
+  <link rel="icon" href="xavendon-logo.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="shell">
+    <nav class="topbar">
+      <a class="brand" href="#top"><img src="xavendon-logo.png" alt="لوگوی xavenDON"><span>xaven<b>DON</b></span></a>
+      <div class="navPill"><i></i> آماده دانلود</div>
+    </nav>
+
+    <section class="hero" id="top">
+      <div class="eyebrow">سریع، ساده، بدون شلوغی</div>
+      <h1>هر لینکی داری،<br><em>اینجا دانلودش کن.</em></h1>
+      <p class="lead">کیفیت را خودت انتخاب کن؛ ویدیو، صدا، کاور و کپشن را یک‌جا تحویل بگیر.</p>
+
+      <div class="downloadCard">
+        <div class="urlRow">
+          <span class="linkIcon">↗</span>
+          <input id="url" type="url" dir="ltr" placeholder="لینک یوتیوب، اینستاگرام یا فایل را وارد کن…">
+          <span id="source" class="sourceBadge" hidden></span>
+        </div>
+        <div class="options">
+          <label class="selectWrap"><span>کیفیت خروجی</span><select id="quality"><option>بهترین کیفیت</option><option>1080p</option><option>720p</option><option>480p</option><option>فقط صدا</option></select></label>
+          <label class="check"><input id="cover" type="checkbox" checked><span></span>دانلود کاور</label>
+          <label class="check"><input id="caption" type="checkbox"><span></span>ذخیره کپشن</label>
+        </div>
+        <button id="analyze" class="primary">بررسی لینک <span>←</span></button>
+        <div id="status" class="status" role="status"></div>
+      </div>
+      <div class="trustRow"><span>YouTube</span><b>•</b><span>Instagram</span><b>•</b><span>SoundCloud</span><b>•</b><span>Direct files</span></div>
+    </section>
+
+    <section id="result" class="resultPanel" hidden>
+      <div class="resultHeading"><div><span>نتیجه بررسی</span><h2>گزینه‌های دریافت محتوا</h2></div><span class="readyBadge">آماده</span></div>
+      <div class="notice">نسخه فعلی رابط وب است. برای دانلود از شبکه‌های اجتماعی، موتور پردازش سرور باید جداگانه متصل شود؛ لینک‌های مستقیم را مرورگر باز می‌کند.</div>
+      <div class="mediaGrid">
+        <article class="mediaItem"><div class="mediaPreview coverPreview"><img src="xavendon-logo.png" alt="کاور"></div><div><b>کاور اصلی</b><small>تصویر با بهترین کیفیت</small><button data-kind="cover">ذخیره در گالری ↓</button></div></article>
+        <article class="mediaItem"><div class="mediaPreview videoPreview">▶</div><div><b>ویدیوی MP4</b><small id="qualityText">سازگار با گالری</small><button data-kind="video">دریافت ویدیو ↓</button></div></article>
+        <article class="mediaItem"><div class="mediaPreview audioPreview">♫</div><div><b>صدای MP3</b><small>کیفیت بالا · بدون تصویر</small><button data-kind="audio">دریافت صدا ↓</button></div></article>
+      </div>
+      <div class="captionBox"><div class="captionTitle"><span>متن و کپشن</span><button id="copy">کپی متن</button></div><p id="captionText">کپشن محتوای پردازش‌شده در این قسمت نمایش داده می‌شود.</p></div>
+    </section>
+
+    <section class="features">
+      <article><span>01</span><h2>انتخاب واقعی کیفیت</h2><p>از نسخه کم‌حجم تا 1080p و بالاتر، با خروجی MP4 سازگار.</p></article>
+      <article><span>02</span><h2>فقط چیزی که می‌خواهی</h2><p>ویدیو، صدای MP3، تصویر کاور و کپشن؛ جدا یا کنار هم.</p></article>
+      <article><span>03</span><h2>روی هر دستگاه</h2><p>طراحی واکنش‌گرا برای آیفون، اندروید، لپ‌تاپ و دسکتاپ.</p></article>
+    </section>
+    <footer><span>xavenDON</span><p>فقط محتوایی را دانلود کن که اجازه استفاده از آن را داری.</p></footer>
+  </main>
+
+  <div id="permission" class="permissionBackdrop" hidden>
+    <div class="permissionModal">
+      <img src="xavendon-logo.png" alt="">
+      <h2>اجازه ذخیره در دستگاه</h2>
+      <p>xavenDON پنجره رسمی گوشی را باز می‌کند. در مرحله بعد گزینه ذخیره را انتخاب کن.</p>
+      <button id="allow" class="allowButton">اجازه می‌دهم</button>
+      <button id="cancel" class="cancelButton">فعلاً نه</button>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
+
