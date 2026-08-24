@@ -2,6 +2,7 @@ import os
 import re
 import shutil
 import tempfile
+import threading
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -17,6 +18,22 @@ ALLOWED_HOSTS = {
     "instagram.com", "www.instagram.com", "soundcloud.com", "www.soundcloud.com",
 }
 MAX_DURATION = 60 * 60
+DOWNLOAD_SLOTS = threading.BoundedSemaphore(2)
+
+
+def ydl_base_options():
+    return {
+        "quiet": True,
+        "no_warnings": True,
+        "noplaylist": True,
+        "retries": 3,
+        "fragment_retries": 3,
+        "extractor_args": {
+            "youtube": {
+                "player_client": ["android_vr", "web_safari", "tv"],
+            }
+        },
+    }
 
 
 def clean_url(value: str) -> str:
@@ -42,7 +59,9 @@ def health():
 def analyze():
     try:
         url = clean_url((request.get_json(silent=True) or {}).get("url"))
-        with YoutubeDL({"quiet": True, "no_warnings": True, "skip_download": True}) as ydl:
+        options = ydl_base_options()
+        options["skip_download"] = True
+        with YoutubeDL(options) as ydl:
             info = ydl.extract_info(url, download=False)
         duration = info.get("duration") or 0
         if duration and duration > MAX_DURATION:
@@ -65,6 +84,8 @@ def analyze():
 
 @app.get("/api/download")
 def download():
+    if not DOWNLOAD_SLOTS.acquire(blocking=False):
+        return jsonify(error="دو دانلود هم‌زمان در حال انجام است؛ کمی بعد دوباره تلاش کن."), 429
     temp_dir = tempfile.mkdtemp(prefix="xavendon-")
     try:
         url = clean_url(request.args.get("url"))
@@ -76,11 +97,8 @@ def download():
             raise ValueError("کیفیت نامعتبر است.")
 
         output = str(Path(temp_dir) / "%(title).80s [%(id)s].%(ext)s")
-        options = {
+        options = ydl_base_options() | {
             "outtmpl": output,
-            "quiet": True,
-            "no_warnings": True,
-            "noplaylist": True,
             "restrictfilenames": False,
             "merge_output_format": "mp4",
         }
@@ -108,13 +126,18 @@ def download():
         ext = "jpg" if mode == "cover" else "mp3" if mode == "audio" else "mp4"
         name = f"{safe_title(info.get('title'))}.{ext}"
         response = send_file(target, as_attachment=True, download_name=name, max_age=0)
-        response.call_on_close(lambda: shutil.rmtree(temp_dir, ignore_errors=True))
+        def cleanup():
+            shutil.rmtree(temp_dir, ignore_errors=True)
+            DOWNLOAD_SLOTS.release()
+        response.call_on_close(cleanup)
         return response
     except ValueError as exc:
         shutil.rmtree(temp_dir, ignore_errors=True)
+        DOWNLOAD_SLOTS.release()
         return jsonify(error=str(exc)), 400
     except Exception:
         shutil.rmtree(temp_dir, ignore_errors=True)
+        DOWNLOAD_SLOTS.release()
         app.logger.exception("download failed")
         return jsonify(error="دانلود انجام نشد؛ محتوای خصوصی و محدود ممکن است نیازمند ورود باشد."), 422
 
