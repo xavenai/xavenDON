@@ -6,6 +6,18 @@ const result = $('#result');
 const permission = $('#permission');
 let pendingKind = null;
 
+const isIphoneSafari = /iPhone|iPod/i.test(navigator.userAgent) && /Safari/i.test(navigator.userAgent) && !/CriOS|FxiOS|EdgiOS/i.test(navigator.userAgent);
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+if (isIphoneSafari && !isStandalone && sessionStorage.getItem('xavendon-ios-guide') !== 'seen') {
+  $('#iosInstall').hidden = false;
+  document.body.classList.add('installOpen');
+}
+$('#enterSite').addEventListener('click', () => {
+  sessionStorage.setItem('xavendon-ios-guide', 'seen');
+  $('#iosInstall').hidden = true;
+  document.body.classList.remove('installOpen');
+});
+
 function sourceOf(value) {
   if (/youtu/i.test(value)) return 'YouTube';
   if (/instagram\.com/i.test(value)) return 'Instagram';
