@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: xavendon-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    autoDeploy: true
+
