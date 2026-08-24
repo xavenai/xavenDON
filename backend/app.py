@@ -70,7 +70,7 @@ def download():
         url = clean_url(request.args.get("url"))
         mode = request.args.get("mode", "video")
         height = request.args.get("height", "best")
-        if mode not in {"video", "audio"}:
+        if mode not in {"video", "audio", "cover"}:
             raise ValueError("نوع خروجی نامعتبر است.")
         if height != "best" and not re.fullmatch(r"\d{3,4}", height):
             raise ValueError("کیفیت نامعتبر است.")
@@ -84,7 +84,13 @@ def download():
             "restrictfilenames": False,
             "merge_output_format": "mp4",
         }
-        if mode == "audio":
+        if mode == "cover":
+            options.update({
+                "skip_download": True,
+                "writethumbnail": True,
+                "postprocessors": [{"key": "FFmpegThumbnailsConvertor", "format": "jpg"}],
+            })
+        elif mode == "audio":
             options.update({
                 "format": "bestaudio/best",
                 "postprocessors": [{"key": "FFmpegExtractAudio", "preferredcodec": "mp3", "preferredquality": "192"}],
@@ -99,7 +105,7 @@ def download():
         if not files:
             raise RuntimeError("output missing")
         target = max(files, key=lambda p: p.stat().st_size)
-        ext = "mp3" if mode == "audio" else "mp4"
+        ext = "jpg" if mode == "cover" else "mp3" if mode == "audio" else "mp4"
         name = f"{safe_title(info.get('title'))}.{ext}"
         response = send_file(target, as_attachment=True, download_name=name, max_age=0)
         response.call_on_close(lambda: shutil.rmtree(temp_dir, ignore_errors=True))
